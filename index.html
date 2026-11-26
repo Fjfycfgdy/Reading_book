@@ -10,7 +10,6 @@
     --bg:#f6f1e7;
     --paper:#fffdf8;
     --ink:#2b2620;
-    --muted:#7a6f60;
     --accent:#8c2f39;
     --accent-soft:#b3545e;
     --gold:#c8a250;
@@ -47,7 +46,7 @@
   .wrap{
     position:relative;
     z-index:1;
-    max-width:900px;
+    max-width:960px;
     margin:0 auto;
     text-align:center;
   }
@@ -55,8 +54,6 @@
   h1{
     font-size:clamp(1.7rem,4.6vw,2.8rem);
     font-weight:800;
-    letter-spacing:-.01em;
-    line-height:1.5;
     color:var(--accent);
     margin-bottom:34px;
     position:relative;
@@ -79,67 +76,69 @@
     animation:rise .9s cubic-bezier(.2,.9,.3,1) both;
   }
 
-  /* ======== کادرهای پوشه ======== */
+  /* ============ کادر بزرگ هر پوشه ============ */
   .folders{
     display:flex;
     flex-direction:column;
-    gap:24px;
+    gap:26px;
     margin-top:48px;
     text-align:right;
   }
 
-  .folder{
+  .folder-box{
     background:var(--paper);
     border:1px solid var(--line);
-    border-radius:20px;
+    border-radius:22px;
     box-shadow:var(--shadow);
     overflow:hidden;
     animation:rise .7s cubic-bezier(.2,.9,.3,1) both;
   }
 
-  .folder-title{
-    font-size:1.15rem;
+  /* تایتل کادر = نام پوشه */
+  .folder-box-title{
+    font-size:1.2rem;
     font-weight:800;
     color:var(--accent);
-    padding:20px 26px 16px;
+    padding:20px 28px 16px;
     border-bottom:1px solid var(--line);
-    background:linear-gradient(90deg, rgba(200,162,80,.10), transparent 75%);
+    background:linear-gradient(90deg, rgba(200,162,80,.12), transparent 75%);
     position:relative;
   }
-  .folder-title::before{
+  .folder-box-title::before{
     content:"";
     position:absolute;right:0;top:50%;transform:translateY(-50%);
-    width:4px;height:22px;border-radius:4px;
+    width:5px;height:24px;border-radius:4px;
     background:linear-gradient(180deg,var(--accent),var(--gold));
   }
 
-  .folder-body{
-    padding:20px 26px 24px;
+  /* داخل کادر: شبکه کارت‌ها */
+  .folder-box-body{
+    padding:22px 28px 26px;
     display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns:repeat(auto-fill, minmax(270px, 1fr));
     gap:18px;
   }
 
-  /* ======== کارت هر فایل (داخل کادر پوشه) ======== */
+  /* ============ کارت هر موزیک/ویدیو ============ */
   .file-card{
     background:#fff;
     border:1px solid var(--line);
-    border-radius:14px;
+    border-radius:16px;
     padding:16px;
     display:flex;
     flex-direction:column;
     gap:12px;
-    transition:border-color .25s, box-shadow .25s, transform .25s;
+    transition:transform .25s, border-color .25s, box-shadow .25s;
     min-width:0;
   }
   .file-card:hover{
     border-color:var(--accent-soft);
-    box-shadow:0 12px 26px -18px rgba(140,47,57,.5);
+    box-shadow:0 12px 28px -18px rgba(140,47,57,.5);
     transform:translateY(-2px);
   }
 
   .file-title{
-    font-size:.98rem;
+    font-size:1rem;
     font-weight:700;
     color:var(--accent);
     word-break:break-word;
@@ -163,19 +162,18 @@
     object-fit:contain;
   }
 
-  /* دکمه دانلود */
   .download-btn{
     display:inline-flex;
     align-items:center;
     justify-content:center;
     gap:8px;
-    padding:10px 18px;
+    padding:11px 18px;
     background:linear-gradient(135deg, var(--accent), #6b2129);
     color:#fff;
     border:none;
     border-radius:11px;
     font-weight:700;
-    font-size:.88rem;
+    font-size:.9rem;
     font-family:inherit;
     cursor:pointer;
     transition:transform .2s, box-shadow .2s;
@@ -185,12 +183,11 @@
     transform:translateY(-2px);
     box-shadow:0 14px 26px -10px rgba(140,47,57,1);
   }
-  .download-btn:active{transform:translateY(0)}
   .download-btn:disabled{cursor:not-allowed;opacity:.85;transform:none}
 
-  /* حالت بارگذاری / خطا */
+  /* ============ وضعیت‌ها ============ */
   .status{
-    padding:34px 20px;
+    padding:30px 20px;
     color:#9a8f7e;
     font-size:.9rem;
     text-align:center;
@@ -199,11 +196,20 @@
     background:rgba(255,253,248,.6);
     margin-top:40px;
   }
-  .status.error{color:var(--accent);border-color:rgba(140,47,57,.35)}
+  .notice{
+    display:inline-flex;align-items:center;gap:8px;
+    margin:28px auto 0;
+    padding:8px 18px;
+    font-size:.8rem;
+    background:rgba(200,162,80,.15);
+    color:#7a5c1a;
+    border:1px solid rgba(200,162,80,.4);
+    border-radius:999px;
+  }
 
   .spinner{
     display:inline-block;
-    width:20px;height:20px;
+    width:18px;height:18px;
     border:2.5px solid rgba(140,47,57,.2);
     border-top-color:var(--accent);
     border-radius:50%;
@@ -226,16 +232,16 @@
     <img class="main-image" src="image.png" alt="جلسه کتابخوانی استاد سلوداری">
 
     <div id="loading" class="status">در حال بارگذاری<span class="spinner"></span></div>
+    <div id="notice" class="notice" style="display:none">⚠️ دیتای نمونه — فایل واقعی یافت نشد</div>
     <div class="folders" id="folders"></div>
-    <div id="error" class="status error" style="display:none"></div>
-    <div id="empty" class="status" style="display:none">هنوز فایل موسیقی یا ویدیویی اضافه نشده.</div>
   </div>
 
 <script>
   /* ==========================================================
-     برای هر پوشه یک کادر بزرگ:
-       - تایتل کادر = نام پوشه
-       - داخل کادر: فایل‌های موسیقی و ویدیو با پیش‌نمایش و دکمه دانلود
+     ساختار:
+       هر پوشه → یک کادر بزرگ با تایتل نام پوشه
+       داخل کادر → کارت‌های موزیک/ویدیو با پیش‌نمایش + دانلود
+     اگر API گیت‌هاب در دسترس نبود → دیتای پیش‌فرض نمونه
      ========================================================== */
 
   const MUSIC_EXTS = new Set(['mp3','wav','ogg','m4a','flac','aac','opus','wma','oga']);
@@ -243,8 +249,22 @@
 
   const loadingEl = document.getElementById('loading');
   const foldersEl = document.getElementById('folders');
-  const errorEl = document.getElementById('error');
-  const emptyEl = document.getElementById('empty');
+  const noticeEl  = document.getElementById('notice');
+
+  /* ============ دیتای پیش‌فرض (وقتی API نیست) ============ */
+  const DEFAULT_DATA = {
+    "جلسه اول": [
+      { name: "مقدمه کتاب.mp3",      url: "#", kind: "music" },
+      { name: "بخش اول - خوانش.mp4", url: "#", kind: "video" }
+    ],
+    "جلسه دوم": [
+      { name: "تحلیل فصل یک.mp3",   url: "#", kind: "music" },
+      { name: "پرسش و پاسخ.mp4",    url: "#", kind: "video" }
+    ],
+    "جلسه سوم": [
+      { name: "جمع‌بندی استاد.mp3", url: "#", kind: "music" }
+    ]
+  };
 
   function getExt(name){
     const i = name.lastIndexOf('.');
@@ -276,31 +296,24 @@
     return { user, repo: parts[0], basePath: parts.slice(1).join('/') };
   }
 
-  async function loadStructure(){
+  async function fetchFromGitHub(){
     const info = detectRepo();
-    if (!info) throw new Error('این صفحه فقط روی GitHub Pages کار می‌کند.');
+    if (!info) throw new Error('offline');
 
     const repoRes = await fetch(`https://api.github.com/repos/${info.user}/${info.repo}`);
-    if (!repoRes.ok){
-      if (repoRes.status === 404) throw new Error('ریپو پیدا نشد.');
-      if (repoRes.status === 403 || repoRes.status === 429)
-        throw new Error('محدودیت درخواست GitHub — کمی بعد دوباره امتحان کن.');
-      throw new Error('خطا در دریافت اطلاعات ریپو (' + repoRes.status + ')');
-    }
+    if (!repoRes.ok) throw new Error('repo-fail');
     const repoInfo = await repoRes.json();
     const branch = repoInfo.default_branch;
 
     const treeRes = await fetch(
       `https://api.github.com/repos/${info.user}/${info.repo}/git/trees/${branch}?recursive=1`
     );
-    if (!treeRes.ok) throw new Error('خطا در دریافت فایل‌ها (' + treeRes.status + ')');
-
+    if (!treeRes.ok) throw new Error('tree-fail');
     const treeData = await treeRes.json();
     const items = treeData.tree || [];
     const basePath = info.basePath ? info.basePath + '/' : '';
 
-    const folders = {}; // { folderName: [ {name, url, kind} ] }
-
+    const folders = {};
     items.forEach(item => {
       if (item.type !== 'blob') return;
       if (basePath && !item.path.startsWith(basePath)) return;
@@ -322,17 +335,24 @@
     });
 
     Object.keys(folders).forEach(k => {
-      folders[k].sort((a, b) =>
-        a.name.localeCompare(b.name, 'fa', { numeric:true })
-      );
+      folders[k].sort((a, b) => a.name.localeCompare(b.name, 'fa', { numeric:true }));
     });
 
+    if (Object.keys(folders).length === 0) throw new Error('empty');
     return folders;
   }
 
-  /* دانلود واقعی با fetch + blob (بدون هدایت به raw) */
+  /* ============ دانلود واقعی ============ */
   async function downloadFile(url, filename, btn){
-    const originalHTML = btn.innerHTML;
+    // اگر URL پیش‌فرض (#) بود، دانلود واقعی نداریم
+    if (!url || url === '#'){
+      const original = btn.innerHTML;
+      btn.innerHTML = '⚠️ فایل نمونه';
+      setTimeout(() => { btn.innerHTML = original; }, 1500);
+      return;
+    }
+
+    const original = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '⏳ در حال دانلود…';
 
@@ -340,23 +360,24 @@
       const res = await fetch(url);
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const blob = await res.blob();
-      const objectUrl = URL.createObjectURL(blob);
+      const objUrl = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = objectUrl;
+      a.href = objUrl;
       a.download = filename;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(objectUrl), 2000);
+      setTimeout(() => URL.revokeObjectURL(objUrl), 2000);
       btn.innerHTML = '✓ دانلود شد';
-      setTimeout(() => { btn.innerHTML = originalHTML; btn.disabled = false; }, 1800);
+      setTimeout(() => { btn.innerHTML = original; btn.disabled = false; }, 1800);
     } catch (err) {
-      console.error('Download failed:', err);
-      btn.innerHTML = '✗ خطا در دانلود';
-      setTimeout(() => { btn.innerHTML = originalHTML; btn.disabled = false; }, 2000);
+      console.error(err);
+      btn.innerHTML = '✗ خطا';
+      setTimeout(() => { btn.innerHTML = original; btn.disabled = false; }, 1800);
     }
   }
 
+  /* ============ ساخت کارت فایل ============ */
   function createFileCard(file){
     const card = document.createElement('div');
     card.className = 'file-card';
@@ -366,22 +387,22 @@
     title.textContent = stripExt(file.name);
     card.appendChild(title);
 
-    // پیش‌نمایش
+    const hasRealSrc = file.url && file.url !== '#';
+
     if (file.kind === 'music'){
       const audio = document.createElement('audio');
       audio.controls = true;
       audio.preload = 'none';
-      audio.src = file.url;
+      if (hasRealSrc) audio.src = file.url;
       card.appendChild(audio);
     } else {
       const video = document.createElement('video');
       video.controls = true;
       video.preload = 'none';
-      video.src = file.url;
+      if (hasRealSrc) video.src = file.url;
       card.appendChild(video);
     }
 
-    // دکمه دانلود
     const dl = document.createElement('button');
     dl.type = 'button';
     dl.className = 'download-btn';
@@ -392,6 +413,7 @@
     return card;
   }
 
+  /* ============ ساخت کادر بزرگ هر پوشه ============ */
   function renderFolders(folders){
     foldersEl.innerHTML = '';
     const names = Object.keys(folders).sort((a, b) =>
@@ -399,47 +421,42 @@
     );
 
     names.forEach((folderName, i) => {
-      const folderDiv = document.createElement('div');
-      folderDiv.className = 'folder';
-      folderDiv.style.animationDelay = (i * 0.08) + 's';
+      const box = document.createElement('div');
+      box.className = 'folder-box';
+      box.style.animationDelay = (i * 0.08) + 's';
 
       // تایتل کادر = نام پوشه
       const title = document.createElement('div');
-      title.className = 'folder-title';
+      title.className = 'folder-box-title';
       title.textContent = folderName;
-      folderDiv.appendChild(title);
+      box.appendChild(title);
 
-      // بدنه کادر = فایل‌ها
+      // بدنه: کارت‌های فایل
       const body = document.createElement('div');
-      body.className = 'folder-body';
+      body.className = 'folder-box-body';
 
       folders[folderName].forEach(file => {
         body.appendChild(createFileCard(file));
       });
 
-      folderDiv.appendChild(body);
-      foldersEl.appendChild(folderDiv);
+      box.appendChild(body);
+      foldersEl.appendChild(box);
     });
   }
 
-  function finalize(folders){
-    loadingEl.style.display = 'none';
-    if (Object.keys(folders).length === 0){
-      emptyEl.style.display = 'block';
-      return;
+  /* ============ اجرای اصلی ============ */
+  (async () => {
+    try {
+      const real = await fetchFromGitHub();
+      loadingEl.style.display = 'none';
+      renderFolders(real);
+    } catch (err) {
+      console.warn('استفاده از دیتای پیش‌فرض:', err.message);
+      loadingEl.style.display = 'none';
+      noticeEl.style.display = 'inline-flex';
+      renderFolders(DEFAULT_DATA);
     }
-    renderFolders(folders);
-  }
-
-  function fail(msg){
-    loadingEl.style.display = 'none';
-    errorEl.style.display = 'block';
-    errorEl.textContent = '⚠️ ' + msg;
-  }
-
-  loadStructure()
-    .then(finalize)
-    .catch(err => fail(err.message || 'خطای ناشناخته'));
+  })();
 </script>
 
 </body>
