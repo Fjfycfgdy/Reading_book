@@ -29,7 +29,9 @@
     color:var(--ink);
     line-height:1.9;
     min-height:100vh;
-    padding:44px 20px;
+    padding:44px 20px 20px;
+    display: flex;
+    flex-direction: column;
   }
 
   body::before{
@@ -49,6 +51,8 @@
     max-width:960px;
     margin:0 auto;
     text-align:center;
+    flex: 1;
+    width: 100%;
   }
 
   h1{
@@ -94,7 +98,6 @@
     animation:rise .7s cubic-bezier(.2,.9,.3,1) both;
   }
 
-  /* تایتل کادر = نام پوشه */
   .folder-box-title{
     font-size:1.2rem;
     font-weight:800;
@@ -111,7 +114,6 @@
     background:linear-gradient(180deg,var(--accent),var(--gold));
   }
 
-  /* داخل کادر: شبکه کارت‌ها */
   .folder-box-body{
     padding:22px 28px 26px;
     display:grid;
@@ -176,6 +178,7 @@
     font-size:.9rem;
     font-family:inherit;
     cursor:pointer;
+    text-decoration: none;
     transition:transform .2s, box-shadow .2s;
     box-shadow:0 10px 20px -10px rgba(140,47,57,.8);
   }
@@ -184,6 +187,30 @@
     box-shadow:0 14px 26px -10px rgba(140,47,57,1);
   }
   .download-btn:disabled{cursor:not-allowed;opacity:.85;transform:none}
+
+  /* ============ کادر لیست خوانندگان ============ */
+  .readers-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 28px 20px;
+    gap: 22px;
+  }
+
+  .readers-image {
+    max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px -10px rgba(60,45,25,.3);
+  }
+
+  .join-btn {
+    padding: 14px 30px;
+    font-size: 1rem;
+    width: 100%;
+    max-width: 400px;
+  }
 
   /* ============ وضعیت‌ها ============ */
   .status{
@@ -223,6 +250,19 @@
     from{opacity:0;transform:translateY(20px)}
     to{opacity:1;transform:none}
   }
+
+  /* ============ فوتر ============ */
+  footer {
+    margin-top: 60px;
+    padding: 20px 0;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #9a8f7e;
+    font-weight: 500;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 1;
+  }
 </style>
 </head>
 <body>
@@ -233,17 +273,29 @@
 
     <div id="loading" class="status">در حال بارگذاری<span class="spinner"></span></div>
     <div id="notice" class="notice" style="display:none">⚠️ دیتای نمونه — فایل واقعی یافت نشد</div>
+    
+    <!-- کادرهای پوشه‌ها -->
     <div class="folders" id="folders"></div>
+
+    <!-- کادر لیست خوانندگان -->
+    <div class="folder-box" style="margin-top: 26px;">
+      <div class="folder-box-title">لیست خوانندگان</div>
+      <div class="readers-box">
+        <img src="list.png" alt="لیست خوانندگان" class="readers-image">
+        
+        <a href="https://fanotech.ir/xw3n6" target="_blank" rel="noopener" class="download-btn join-btn">
+          ورود به جلسه (ساعت ۲۱:۳۰ تا ۲۲:۰۰)
+        </a>
+      </div>
+    </div>
   </div>
 
-<script>
-  /* ==========================================================
-     ساختار:
-       هر پوشه → یک کادر بزرگ با تایتل نام پوشه
-       داخل کادر → کارت‌های موزیک/ویدیو با پیش‌نمایش + دانلود
-     اگر API گیت‌هاب در دسترس نبود → دیتای پیش‌فرض نمونه
-     ========================================================== */
+  <!-- فوتر / امضا -->
+  <footer>
+    Oraxel 2026
+  </footer>
 
+<script>
   const MUSIC_EXTS = new Set(['mp3','wav','ogg','m4a','flac','aac','opus','wma','oga']);
   const VIDEO_EXTS = new Set(['mp4','webm','mov','avi','mkv','m4v','ogv','3gp']);
 
@@ -251,41 +303,45 @@
   const foldersEl = document.getElementById('folders');
   const noticeEl  = document.getElementById('notice');
 
-  /* ============ دیتای پیش‌فرض (وقتی API نیست) ============ */
-  const DEFAULT_DATA = {
-    "جلسه اول": [
-      { name: "مقدمه کتاب.mp3",      url: "#", kind: "music" },
-      { name: "بخش اول - خوانش.mp4", url: "#", kind: "video" }
-    ],
-    "جلسه دوم": [
-      { name: "تحلیل فصل یک.mp3",   url: "#", kind: "music" },
-      { name: "پرسش و پاسخ.mp4",    url: "#", kind: "video" }
-    ],
-    "جلسه سوم": [
-      { name: "جمع‌بندی استاد.mp3", url: "#", kind: "music" }
-    ]
+  const persianNumbersMap = {
+    'اول': 1, 'یکم': 1, 'دوم': 2, 'دومین': 2, 'سوم': 3, 'سومین': 3,
+    'چهارم': 4, 'چهارمین': 4, 'پنجم': 5, 'پنجمین': 5, 'ششم': 6, 'ششمین': 6,
+    'هفتم': 7, 'هفتمین': 7, 'هشتم': 8, 'هشتمین': 8, 'نهم': 9, 'نهمین': 9,
+    'دهم': 10, 'دهمین': 10, 'یازدهم': 11, 'یازدهمین': 11, 'دوازدهم': 12, 'دوازدهمین': 12,
+    'سیزدهم': 13, 'سیزدهمین': 13, 'چهاردهم': 14, 'چهاردهمین': 14, 'پانزدهم': 15, 'پانزدهمین': 15,
+    'شانزدهم': 16, 'شانزدهمین': 16, 'هفدهم': 17, 'هفدهمین': 17, 'هجدهم': 18, 'هجدهمین': 18,
+    'نوزدهم': 19, 'نوزدهمین': 19, 'بیستم': 20, 'بیستمین': 20, 'مقدمه': 0
   };
 
-  function getExt(name){
-    const i = name.lastIndexOf('.');
-    return i < 0 ? '' : name.slice(i + 1).toLowerCase();
+  function extractNumber(text) {
+    for (const [word, num] of Object.entries(persianNumbersMap)) {
+      if (text.includes(word)) return num;
+    }
+    const match = text.match(/[\d۰-۹]+/);
+    if (match) {
+      const numStr = match[0].replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+      return parseInt(numStr, 10);
+    }
+    return 999;
   }
 
-  function getKind(name){
-    const ext = getExt(name);
-    if (MUSIC_EXTS.has(ext)) return 'music';
-    if (VIDEO_EXTS.has(ext)) return 'video';
-    return null;
+  function sortPersianNumeric(a, b) {
+    const numA = extractNumber(a);
+    const numB = extractNumber(b);
+    if (numA !== numB) return numA - numB;
+    return a.localeCompare(b, 'fa', { numeric: true });
   }
 
-  function stripExt(name){
-    const i = name.lastIndexOf('.');
-    return i > 0 ? name.slice(0, i) : name;
-  }
+  const DEFAULT_DATA = {
+    "شب اول کتابخوانی": [{ name: "مقدمه کتاب.mp3", url: "#", kind: "music" }, { name: "بخش اول - خوانش.mp4", url: "#", kind: "video" }],
+    "شب دوم کتابخوانی": [{ name: "تحلیل فصل یک.mp3", url: "#", kind: "music" }, { name: "پرسش و پاسخ.mp4", url: "#", kind: "video" }],
+    "شب پنجم کتابخوانی": [{ name: "جمع‌بندی استاد.mp3", url: "#", kind: "music" }]
+  };
 
-  function shouldSkip(name){
-    return name.startsWith('.') || name.startsWith('_');
-  }
+  function getExt(name){ const i = name.lastIndexOf('.'); return i < 0 ? '' : name.slice(i + 1).toLowerCase(); }
+  function getKind(name){ const ext = getExt(name); if (MUSIC_EXTS.has(ext)) return 'music'; if (VIDEO_EXTS.has(ext)) return 'video'; return null; }
+  function stripExt(name){ const i = name.lastIndexOf('.'); return i > 0 ? name.slice(0, i) : name; }
+  function shouldSkip(name){ return name.startsWith('.') || name.startsWith('_'); }
 
   function detectRepo(){
     const host = location.hostname;
@@ -305,9 +361,7 @@
     const repoInfo = await repoRes.json();
     const branch = repoInfo.default_branch;
 
-    const treeRes = await fetch(
-      `https://api.github.com/repos/${info.user}/${info.repo}/git/trees/${branch}?recursive=1`
-    );
+    const treeRes = await fetch(`https://api.github.com/repos/${info.user}/${info.repo}/git/trees/${branch}?recursive=1`);
     if (!treeRes.ok) throw new Error('tree-fail');
     const treeData = await treeRes.json();
     const items = treeData.tree || [];
@@ -335,16 +389,14 @@
     });
 
     Object.keys(folders).forEach(k => {
-      folders[k].sort((a, b) => a.name.localeCompare(b.name, 'fa', { numeric:true }));
+      folders[k].sort((a, b) => sortPersianNumeric(a.name, b.name));
     });
 
     if (Object.keys(folders).length === 0) throw new Error('empty');
     return folders;
   }
 
-  /* ============ دانلود واقعی ============ */
   async function downloadFile(url, filename, btn){
-    // اگر URL پیش‌فرض (#) بود، دانلود واقعی نداریم
     if (!url || url === '#'){
       const original = btn.innerHTML;
       btn.innerHTML = '⚠️ فایل نمونه';
@@ -371,13 +423,11 @@
       btn.innerHTML = '✓ دانلود شد';
       setTimeout(() => { btn.innerHTML = original; btn.disabled = false; }, 1800);
     } catch (err) {
-      console.error(err);
       btn.innerHTML = '✗ خطا';
       setTimeout(() => { btn.innerHTML = original; btn.disabled = false; }, 1800);
     }
   }
 
-  /* ============ ساخت کارت فایل ============ */
   function createFileCard(file){
     const card = document.createElement('div');
     card.className = 'file-card';
@@ -413,25 +463,20 @@
     return card;
   }
 
-  /* ============ ساخت کادر بزرگ هر پوشه ============ */
   function renderFolders(folders){
     foldersEl.innerHTML = '';
-    const names = Object.keys(folders).sort((a, b) =>
-      a.localeCompare(b, 'fa', { numeric:true })
-    );
+    const names = Object.keys(folders).sort(sortPersianNumeric);
 
     names.forEach((folderName, i) => {
       const box = document.createElement('div');
       box.className = 'folder-box';
       box.style.animationDelay = (i * 0.08) + 's';
 
-      // تایتل کادر = نام پوشه
       const title = document.createElement('div');
       title.className = 'folder-box-title';
       title.textContent = folderName;
       box.appendChild(title);
 
-      // بدنه: کارت‌های فایل
       const body = document.createElement('div');
       body.className = 'folder-box-body';
 
@@ -444,7 +489,6 @@
     });
   }
 
-  /* ============ اجرای اصلی ============ */
   (async () => {
     try {
       const real = await fetchFromGitHub();
