@@ -10,6 +10,7 @@
     --bg:#f6f1e7;
     --paper:#fffdf8;
     --ink:#2b2620;
+    --muted:#7a6f60;
     --accent:#8c2f39;
     --accent-soft:#b3545e;
     --gold:#c8a250;
@@ -78,66 +79,97 @@
     animation:rise .9s cubic-bezier(.2,.9,.3,1) both;
   }
 
-  /* شبکه کارت‌های پوشه */
-  .cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(170px, 1fr));
-    gap:16px;
+  /* ======== کادرهای بزرگ هر پوشه ======== */
+  .folders{
+    display:flex;
+    flex-direction:column;
+    gap:22px;
     margin-top:48px;
     text-align:right;
   }
 
-  .card{
+  .folder{
     background:var(--paper);
     border:1px solid var(--line);
-    border-radius:16px;
-    padding:24px 18px;
-    text-decoration:none;
-    color:var(--accent);
-    display:flex;
-    flex-direction:column;
-    align-items:flex-start;
-    gap:10px;
+    border-radius:20px;
     box-shadow:var(--shadow);
-    transition:transform .3s cubic-bezier(.2,.9,.3,1), border-color .3s, box-shadow .3s;
-    position:relative;
     overflow:hidden;
     animation:rise .7s cubic-bezier(.2,.9,.3,1) both;
   }
 
-  .card::before{
+  .folder-title{
+    font-size:1.15rem;
+    font-weight:800;
+    color:var(--accent);
+    padding:20px 26px 16px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(90deg, rgba(200,162,80,.10), transparent 75%);
+    position:relative;
+  }
+  .folder-title::before{
     content:"";
-    position:absolute;inset:0;
-    background:linear-gradient(160deg, rgba(140,47,57,.06), transparent 60%);
-    opacity:0;
-    transition:opacity .3s;
+    position:absolute;right:0;top:50%;transform:translateY(-50%);
+    width:4px;height:22px;border-radius:4px;
+    background:linear-gradient(180deg,var(--accent),var(--gold));
   }
 
-  .card:hover{
-    transform:translateY(-5px);
+  .file-list{
+    padding:20px 26px 24px;
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
+    gap:10px;
+  }
+
+  .file{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:11px 14px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:11px;
+    text-decoration:none;
+    color:var(--ink);
+    font-size:.92rem;
+    transition:transform .25s cubic-bezier(.2,.9,.3,1), border-color .25s, background .25s;
+    min-width:0;
+  }
+  .file:hover{
+    transform:translateY(-2px);
     border-color:var(--accent-soft);
-    box-shadow:0 18px 36px -18px rgba(140,47,57,.55);
+    background:rgba(140,47,57,.04);
   }
-  .card:hover::before{opacity:1}
-
-  .card .icon{font-size:1.7rem;line-height:1;z-index:1}
-  .card .title{font-size:1.02rem;font-weight:700;z-index:1;word-break:break-word}
-  .card .hint{font-size:.72rem;color:#9a8f7e;font-weight:500;z-index:1}
+  .file .icon{
+    font-size:1.1rem;
+    flex:0 0 auto;
+    line-height:1;
+  }
+  .file .name{
+    font-weight:600;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    direction:ltr;
+    text-align:left;
+    flex:1;
+  }
+  .file .name.fa{
+    direction:rtl;
+    text-align:right;
+  }
 
   /* حالت بارگذاری / خطا */
   .status{
-    grid-column:1/-1;
     padding:34px 20px;
     color:#9a8f7e;
     font-size:.9rem;
     text-align:center;
     border:1px dashed var(--line);
-    border-radius:16px;
+    border-radius:20px;
     background:rgba(255,253,248,.6);
   }
   .status.error{color:var(--accent);border-color:rgba(140,47,57,.35)}
 
-  /* اسپینر */
   .spinner{
     display:inline-block;
     width:20px;height:20px;
@@ -146,12 +178,12 @@
     border-radius:50%;
     animation:spin .8s linear infinite;
     vertical-align:middle;
-    margin-left:8px;
+    margin-right:8px;
   }
   @keyframes spin{to{transform:rotate(360deg)}}
 
   @keyframes rise{
-    from{opacity:0;transform:translateY(24px)}
+    from{opacity:0;transform:translateY(20px)}
     to{opacity:1;transform:none}
   }
 </style>
@@ -162,100 +194,155 @@
     <h1>جلسه کتابخوانی استاد سلوداری</h1>
     <img class="main-image" src="image.png" alt="جلسه کتابخوانی استاد سلوداری">
 
-    <div class="cards" id="cards">
-      <div class="status">در حال بارگذاری پوشه‌ها<span class="spinner"></span></div>
+    <div class="folders" id="folders">
+      <div class="status">در حال بارگذاری<span class="spinner"></span></div>
     </div>
   </div>
 
 <script>
   /* ==========================================================
-     کارت‌ها خودکار از GitHub API خونده می‌شن.
-     اگر فایل HTML در ریشه ریپو باشه، پوشه‌های همون جا لیست می‌شن.
+     کارت‌های بزرگ هر پوشه + فایل‌های داخلشون
+     خودکار از GitHub API خونده می‌شن
      ========================================================== */
 
-  const cardsEl = document.getElementById('cards');
+  const foldersEl = document.getElementById('folders');
 
-  /* فقط پوشه‌های همین مسیر جاری رو نشون می‌ده
-     (پوشه‌هایی که با . یا _ شروع بشن حذف می‌شن) */
   function shouldSkip(name){
     return name.startsWith('.') || name.startsWith('_');
   }
 
-  /* تشخیص خودکار ریپو از آدرس GitHub Pages */
   function detectRepo(){
     const host = location.hostname;
     if (!host.endsWith('.github.io')) return null;
-
     const user = host.slice(0, -'.github.io'.length);
     const parts = location.pathname.split('/').filter(Boolean);
-
-    // user.github.io/  →  ریپو = user.github.io
-    if (parts.length === 0) {
-      return { user, repo: host, basePath: '' };
-    }
-    // user.github.io/repo/...  →  ریپو = parts[0]
+    if (parts.length === 0) return { user, repo: host, basePath: '' };
     return { user, repo: parts[0], basePath: parts.slice(1).join('/') };
   }
 
-  async function loadFolders(){
+  async function loadStructure(){
     const info = detectRepo();
+    if (!info) throw new Error('این صفحه فقط روی GitHub Pages کار می‌کند.');
 
-    // اگر روی GitHub Pages نیستیم → fallback به لیست دستی
-    if (!info) {
-      return []; // اینجا می‌تونی اسم پوشه‌ها رو دستی بنویسی
+    // ۱) پیدا کردن شاخه پیش‌فرض ریپو
+    const repoRes = await fetch(`https://api.github.com/repos/${info.user}/${info.repo}`);
+    if (!repoRes.ok){
+      if (repoRes.status === 404) throw new Error('ریپو پیدا نشد.');
+      if (repoRes.status === 403 || repoRes.status === 429)
+        throw new Error('محدودیت درخواست GitHub — کمی بعد دوباره امتحان کن.');
+      throw new Error('خطا در دریافت اطلاعات ریپو (' + repoRes.status + ')');
     }
+    const repoInfo = await repoRes.json();
+    const branch = repoInfo.default_branch;
 
-    const path = info.basePath ? info.basePath + '/' : '';
-    const url = `https://api.github.com/repos/${info.user}/${info.repo}/contents/${path}?per_page=100`;
+    // ۲) گرفتن کل درخت فایل‌ها با یک درخواست
+    const treeRes = await fetch(
+      `https://api.github.com/repos/${info.user}/${info.repo}/git/trees/${branch}?recursive=1`
+    );
+    if (!treeRes.ok) throw new Error('خطا در دریافت فایل‌ها (' + treeRes.status + ')');
 
-    const res = await fetch(url, {
-      headers: { 'Accept': 'application/vnd.github+json' }
+    const treeData = await treeRes.json();
+    const items = treeData.tree || [];
+    const basePath = info.basePath ? info.basePath + '/' : '';
+
+    // ۳) گروه‌بندی فایل‌های مستقیم داخل هر پوشه
+    const folders = {}; // { folderName: [ {name, url} ] }
+
+    items.forEach(item => {
+      if (item.type !== 'blob') return;
+      if (basePath && !item.path.startsWith(basePath)) return;
+
+      const relPath = item.path.slice(basePath.length);
+      const parts = relPath.split('/');
+      if (parts.length !== 2) return; // فقط فایل‌های مستقیم داخل پوشه
+
+      const folderName = parts[0];
+      if (shouldSkip(folderName)) return;
+
+      const fileName = parts[1];
+      if (!folders[folderName]) folders[folderName] = [];
+
+      const url = relPath.split('/').map(encodeURIComponent).join('/');
+      folders[folderName].push({ name: fileName, url });
     });
 
-    if (!res.ok) {
-      if (res.status === 403 || res.status === 429) {
-        throw new Error('محدودیت تعداد درخواست GitHub — کمی بعد دوباره امتحان کن.');
-      }
-      throw new Error('خطا در دریافت لیست پوشه‌ها (کد ' + res.status + ')');
-    }
+    // مرتب‌سازی فایل‌ها داخل هر پوشه
+    Object.keys(folders).forEach(k => {
+      folders[k].sort((a, b) => a.name.localeCompare(b.name, 'fa', { numeric: true }));
+    });
 
-    const items = await res.json();
-    if (!Array.isArray(items)) throw new Error('پاسخ نامعتبر از GitHub');
-
-    return items
-      .filter(i => i.type === 'dir' && !shouldSkip(i.name))
-      .map(i => i.name)
-      .sort((a, b) => a.localeCompare(b, 'fa'));
+    return folders;
   }
 
-  function renderCards(folders){
-    cardsEl.innerHTML = '';
+  function getIcon(filename){
+    const ext = filename.split('.').pop().toLowerCase();
+    if (['jpg','jpeg','png','gif','webp','svg','bmp','ico','avif'].includes(ext)) return '🖼️';
+    if (['mp4','webm','mov','avi','mkv'].includes(ext)) return '🎬';
+    if (['mp3','wav','ogg','m4a','flac','aac'].includes(ext)) return '🎵';
+    if (['pdf'].includes(ext)) return '📄';
+    if (['doc','docx','txt','md','rtf','odt'].includes(ext)) return '📝';
+    if (['xls','xlsx','csv','ods'].includes(ext)) return '📊';
+    if (['ppt','pptx','odp'].includes(ext)) return '📽️';
+    if (['zip','rar','7z','tar','gz'].includes(ext)) return '🗜️';
+    return '📎';
+  }
 
-    if (folders.length === 0) {
-      cardsEl.innerHTML = '<div class="status">هنوز پوشه‌ای ساخته نشده.</div>';
+  function isPersian(text){
+    return /[\u0600-\u06FF]/.test(text);
+  }
+
+  function renderFolders(folders){
+    const names = Object.keys(folders).sort((a,b) => a.localeCompare(b, 'fa', { numeric: true }));
+
+    if (names.length === 0){
+      foldersEl.innerHTML = '<div class="status">هنوز محتوایی موجود نیست.</div>';
       return;
     }
 
-    folders.forEach((name, i) => {
-      const a = document.createElement('a');
-      a.className = 'card';
-      a.href = encodeURIComponent(name) + '/';
-      a.style.animationDelay = (i * 0.06) + 's';
-      a.innerHTML = `
-        <span class="icon">📁</span>
-        <span class="title">${name}</span>
-        <span class="hint">مشاهده پوشه</span>
-      `;
-      cardsEl.appendChild(a);
+    foldersEl.innerHTML = '';
+
+    names.forEach((folderName, i) => {
+      const folderDiv = document.createElement('div');
+      folderDiv.className = 'folder';
+      folderDiv.style.animationDelay = (i * 0.08) + 's';
+
+      const title = document.createElement('div');
+      title.className = 'folder-title';
+      title.textContent = folderName;
+      folderDiv.appendChild(title);
+
+      const list = document.createElement('div');
+      list.className = 'file-list';
+
+      const files = folders[folderName];
+      if (files.length === 0){
+        list.innerHTML = '<div style="color:#9a8f7e;font-size:.85rem;padding:4px 2px;">—</div>';
+      } else {
+        files.forEach(f => {
+          const a = document.createElement('a');
+          a.className = 'file';
+          a.href = f.url;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.innerHTML = `
+            <span class="icon">${getIcon(f.name)}</span>
+            <span class="name${isPersian(f.name) ? ' fa' : ''}">${f.name}</span>
+          `;
+          list.appendChild(a);
+        });
+      }
+
+      folderDiv.appendChild(list);
+      foldersEl.appendChild(folderDiv);
     });
   }
 
   function renderError(msg){
-    cardsEl.innerHTML = `<div class="status error">⚠️ ${msg}</div>`;
+    foldersEl.innerHTML = `<div class="status error">⚠️ ${msg}</div>`;
   }
 
-  loadFolders()
-    .then(renderCards)
+  loadStructure()
+    .then(renderFolders)
     .catch(err => renderError(err.message || 'خطای ناشناخته'));
 </script>
 
