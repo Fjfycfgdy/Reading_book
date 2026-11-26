@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه کتابخوانی استاد سلوداری</title>
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f1e7;
+    --paper:#fffdf8;
+    --ink:#2b2620;
+    --accent:#8c2f39;
+    --accent-soft:#b3545e;
+    --gold:#c8a250;
+    --line:#e6ddcc;
+    --shadow:0 14px 32px -18px rgba(60,45,25,.45);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+
+  body{
+    font-family:"Vazirmatn", system-ui, sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, #fffaf0 0%, transparent 45%),
+      radial-gradient(circle at 85% 85%, #f1e8d6 0%, transparent 50%),
+      var(--bg);
+    color:var(--ink);
+    line-height:1.9;
+    min-height:100vh;
+    padding:44px 20px;
+  }
+
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    background-image:
+      linear-gradient(rgba(140,47,57,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(140,47,57,.035) 1px, transparent 1px);
+    background-size:34px 34px;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .wrap{
+    position:relative;
+    z-index:1;
+    max-width:900px;
+    margin:0 auto;
+    text-align:center;
+  }
+
+  h1{
+    font-size:clamp(1.7rem,4.6vw,2.8rem);
+    font-weight:800;
+    letter-spacing:-.01em;
+    line-height:1.5;
+    color:var(--accent);
+    margin-bottom:34px;
+    position:relative;
+    padding-bottom:18px;
+  }
+  h1::after{
+    content:"";
+    position:absolute;right:50%;transform:translateX(50%);
+    bottom:0;
+    width:90px;height:4px;border-radius:4px;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+    opacity:.75;
+  }
+
+  img.main-image{
+    display:inline-block;
+    max-width:100%;
+    height:auto;
+    vertical-align:middle;
+    animation:rise .9s cubic-bezier(.2,.9,.3,1) both;
+  }
+
+  /* شبکه کارت‌های پوشه */
+  .cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(170px, 1fr));
+    gap:16px;
+    margin-top:48px;
+    text-align:right;
+  }
+
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:24px 18px;
+    text-decoration:none;
+    color:var(--accent);
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+    box-shadow:var(--shadow);
+    transition:transform .3s cubic-bezier(.2,.9,.3,1), border-color .3s, box-shadow .3s;
+    position:relative;
+    overflow:hidden;
+    animation:rise .7s cubic-bezier(.2,.9,.3,1) both;
+  }
+
+  .card::before{
+    content:"";
+    position:absolute;inset:0;
+    background:linear-gradient(160deg, rgba(140,47,57,.06), transparent 60%);
+    opacity:0;
+    transition:opacity .3s;
+  }
+
+  .card:hover{
+    transform:translateY(-5px);
+    border-color:var(--accent-soft);
+    box-shadow:0 18px 36px -18px rgba(140,47,57,.55);
+  }
+  .card:hover::before{opacity:1}
+
+  .card .icon{font-size:1.7rem;line-height:1;z-index:1}
+  .card .title{font-size:1.02rem;font-weight:700;z-index:1;word-break:break-word}
+  .card .hint{font-size:.72rem;color:#9a8f7e;font-weight:500;z-index:1}
+
+  /* حالت بارگذاری / خطا */
+  .status{
+    grid-column:1/-1;
+    padding:34px 20px;
+    color:#9a8f7e;
+    font-size:.9rem;
+    text-align:center;
+    border:1px dashed var(--line);
+    border-radius:16px;
+    background:rgba(255,253,248,.6);
+  }
+  .status.error{color:var(--accent);border-color:rgba(140,47,57,.35)}
+
+  /* اسپینر */
+  .spinner{
+    display:inline-block;
+    width:20px;height:20px;
+    border:2.5px solid rgba(140,47,57,.2);
+    border-top-color:var(--accent);
+    border-radius:50%;
+    animation:spin .8s linear infinite;
+    vertical-align:middle;
+    margin-left:8px;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  @keyframes rise{
+    from{opacity:0;transform:translateY(24px)}
+    to{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+    <h1>جلسه کتابخوانی استاد سلوداری</h1>
+    <img class="main-image" src="image.png" alt="جلسه کتابخوانی استاد سلوداری">
+
+    <div class="cards" id="cards">
+      <div class="status">در حال بارگذاری پوشه‌ها<span class="spinner"></span></div>
+    </div>
+  </div>
+
+<script>
+  /* ==========================================================
+     کارت‌ها خودکار از GitHub API خونده می‌شن.
+     اگر فایل HTML در ریشه ریپو باشه، پوشه‌های همون جا لیست می‌شن.
+     ========================================================== */
+
+  const cardsEl = document.getElementById('cards');
+
+  /* فقط پوشه‌های همین مسیر جاری رو نشون می‌ده
+     (پوشه‌هایی که با . یا _ شروع بشن حذف می‌شن) */
+  function shouldSkip(name){
+    return name.startsWith('.') || name.startsWith('_');
+  }
+
+  /* تشخیص خودکار ریپو از آدرس GitHub Pages */
+  function detectRepo(){
+    const host = location.hostname;
+    if (!host.endsWith('.github.io')) return null;
+
+    const user = host.slice(0, -'.github.io'.length);
+    const parts = location.pathname.split('/').filter(Boolean);
+
+    // user.github.io/  →  ریپو = user.github.io
+    if (parts.length === 0) {
+      return { user, repo: host, basePath: '' };
+    }
+    // user.github.io/repo/...  →  ریپو = parts[0]
+    return { user, repo: parts[0], basePath: parts.slice(1).join('/') };
+  }
+
+  async function loadFolders(){
+    const info = detectRepo();
+
+    // اگر روی GitHub Pages نیستیم → fallback به لیست دستی
+    if (!info) {
+      return []; // اینجا می‌تونی اسم پوشه‌ها رو دستی بنویسی
+    }
+
+    const path = info.basePath ? info.basePath + '/' : '';
+    const url = `https://api.github.com/repos/${info.user}/${info.repo}/contents/${path}?per_page=100`;
+
+    const res = await fetch(url, {
+      headers: { 'Accept': 'application/vnd.github+json' }
+    });
+
+    if (!res.ok) {
+      if (res.status === 403 || res.status === 429) {
+        throw new Error('محدودیت تعداد درخواست GitHub — کمی بعد دوباره امتحان کن.');
+      }
+      throw new Error('خطا در دریافت لیست پوشه‌ها (کد ' + res.status + ')');
+    }
+
+    const items = await res.json();
+    if (!Array.isArray(items)) throw new Error('پاسخ نامعتبر از GitHub');
+
+    return items
+      .filter(i => i.type === 'dir' && !shouldSkip(i.name))
+      .map(i => i.name)
+      .sort((a, b) => a.localeCompare(b, 'fa'));
+  }
+
+  function renderCards(folders){
+    cardsEl.innerHTML = '';
+
+    if (folders.length === 0) {
+      cardsEl.innerHTML = '<div class="status">هنوز پوشه‌ای ساخته نشده.</div>';
+      return;
+    }
+
+    folders.forEach((name, i) => {
+      const a = document.createElement('a');
+      a.className = 'card';
+      a.href = encodeURIComponent(name) + '/';
+      a.style.animationDelay = (i * 0.06) + 's';
+      a.innerHTML = `
+        <span class="icon">📁</span>
+        <span class="title">${name}</span>
+        <span class="hint">مشاهده پوشه</span>
+      `;
+      cardsEl.appendChild(a);
+    });
+  }
+
+  function renderError(msg){
+    cardsEl.innerHTML = `<div class="status error">⚠️ ${msg}</div>`;
+  }
+
+  loadFolders()
+    .then(renderCards)
+    .catch(err => renderError(err.message || 'خطای ناشناخته'));
+</script>
+
+</body>
+</html>
