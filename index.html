@@ -79,99 +79,12 @@
     animation:rise .9s cubic-bezier(.2,.9,.3,1) both;
   }
 
-  .section-title{
-    font-size:1.25rem;
-    font-weight:800;
-    color:var(--accent);
-    margin:52px 0 22px;
-    text-align:right;
-    padding-right:14px;
-    border-right:4px solid var(--gold);
-    border-radius:3px;
-  }
-
-  /* ======== کادرهای موسیقی ======== */
-  .music-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
-    gap:18px;
-    text-align:right;
-  }
-
-  .music-card{
-    background:var(--paper);
-    border:1px solid var(--line);
-    border-radius:20px;
-    padding:22px;
-    box-shadow:var(--shadow);
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-    animation:rise .7s cubic-bezier(.2,.9,.3,1) both;
-    transition:transform .3s, border-color .3s, box-shadow .3s;
-  }
-  .music-card:hover{
-    border-color:var(--accent-soft);
-    box-shadow:0 18px 36px -18px rgba(140,47,57,.45);
-  }
-
-  .music-title{
-    font-size:1.02rem;
-    font-weight:800;
-    color:var(--accent);
-    word-break:break-word;
-    line-height:1.5;
-  }
-
-  .music-folder{
-    font-size:.74rem;
-    color:#9a8f7e;
-    margin-top:-6px;
-    font-weight:500;
-  }
-
-  .music-card audio{
-    width:100%;
-    height:42px;
-    border-radius:10px;
-    outline:none;
-    background:#fff;
-  }
-
-  /* دکمه دانلود */
-  .download-btn{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-    padding:11px 20px;
-    background:linear-gradient(135deg, var(--accent), #6b2129);
-    color:#fff;
-    border:none;
-    border-radius:12px;
-    font-weight:700;
-    font-size:.92rem;
-    font-family:inherit;
-    cursor:pointer;
-    transition:transform .2s, box-shadow .2s, background .2s;
-    box-shadow:0 10px 20px -10px rgba(140,47,57,.8);
-  }
-  .download-btn:hover{
-    transform:translateY(-2px);
-    box-shadow:0 14px 26px -10px rgba(140,47,57,1);
-  }
-  .download-btn:active{transform:translateY(0)}
-  .download-btn:disabled{
-    cursor:not-allowed;
-    opacity:.85;
-    transform:none;
-  }
-
-  /* ======== کادرهای ویدیو (پوشه‌ها) ======== */
+  /* ======== کادرهای پوشه ======== */
   .folders{
     display:flex;
     flex-direction:column;
-    gap:22px;
+    gap:24px;
+    margin-top:48px;
     text-align:right;
   }
 
@@ -185,10 +98,10 @@
   }
 
   .folder-title{
-    font-size:1.12rem;
+    font-size:1.15rem;
     font-weight:800;
     color:var(--accent);
-    padding:18px 26px 14px;
+    padding:20px 26px 16px;
     border-bottom:1px solid var(--line);
     background:linear-gradient(90deg, rgba(200,162,80,.10), transparent 75%);
     position:relative;
@@ -200,14 +113,15 @@
     background:linear-gradient(180deg,var(--accent),var(--gold));
   }
 
-  .video-list{
+  .folder-body{
     padding:20px 26px 24px;
-    display:flex;
-    flex-direction:column;
-    gap:20px;
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
+    gap:18px;
   }
 
-  .video-card{
+  /* ======== کارت هر فایل (داخل کادر پوشه) ======== */
+  .file-card{
     background:#fff;
     border:1px solid var(--line);
     border-radius:14px;
@@ -215,14 +129,16 @@
     display:flex;
     flex-direction:column;
     gap:12px;
-    transition:border-color .25s, box-shadow .25s;
+    transition:border-color .25s, box-shadow .25s, transform .25s;
+    min-width:0;
   }
-  .video-card:hover{
+  .file-card:hover{
     border-color:var(--accent-soft);
     box-shadow:0 12px 26px -18px rgba(140,47,57,.5);
+    transform:translateY(-2px);
   }
 
-  .video-title{
+  .file-title{
     font-size:.98rem;
     font-weight:700;
     color:var(--accent);
@@ -230,7 +146,15 @@
     line-height:1.5;
   }
 
-  .video-card video{
+  .file-card audio{
+    width:100%;
+    height:40px;
+    border-radius:8px;
+    outline:none;
+    background:#faf7f0;
+  }
+
+  .file-card video{
     width:100%;
     border-radius:10px;
     background:#000;
@@ -238,6 +162,31 @@
     aspect-ratio:16/9;
     object-fit:contain;
   }
+
+  /* دکمه دانلود */
+  .download-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:10px 18px;
+    background:linear-gradient(135deg, var(--accent), #6b2129);
+    color:#fff;
+    border:none;
+    border-radius:11px;
+    font-weight:700;
+    font-size:.88rem;
+    font-family:inherit;
+    cursor:pointer;
+    transition:transform .2s, box-shadow .2s;
+    box-shadow:0 10px 20px -10px rgba(140,47,57,.8);
+  }
+  .download-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 14px 26px -10px rgba(140,47,57,1);
+  }
+  .download-btn:active{transform:translateY(0)}
+  .download-btn:disabled{cursor:not-allowed;opacity:.85;transform:none}
 
   /* حالت بارگذاری / خطا */
   .status{
@@ -277,44 +226,29 @@
     <img class="main-image" src="image.png" alt="جلسه کتابخوانی استاد سلوداری">
 
     <div id="loading" class="status">در حال بارگذاری<span class="spinner"></span></div>
-
-    <section id="music-section" style="display:none">
-      <h2 class="section-title">🎵 موسیقی</h2>
-      <div class="music-grid" id="music-grid"></div>
-    </section>
-
-    <section id="video-section" style="display:none">
-      <h2 class="section-title">🎬 ویدیو</h2>
-      <div class="folders" id="folders"></div>
-    </section>
-
+    <div class="folders" id="folders"></div>
     <div id="error" class="status error" style="display:none"></div>
     <div id="empty" class="status" style="display:none">هنوز فایل موسیقی یا ویدیویی اضافه نشده.</div>
   </div>
 
 <script>
   /* ==========================================================
-     فقط موسیقی و ویدیو نمایش داده می‌شود.
-     موسیقی: کادر مستقل با تایتل + پخش‌کننده + دانلود
-     ویدیو: داخل کادر پوشه‌ها، هر ویدیو با پخش‌کننده + دانلود
-     دکمه دانلود: با fetch + blob واقعاً دانلود می‌کند (بدون هدایت به raw)
+     برای هر پوشه یک کادر بزرگ:
+       - تایتل کادر = نام پوشه
+       - داخل کادر: فایل‌های موسیقی و ویدیو با پیش‌نمایش و دکمه دانلود
      ========================================================== */
 
   const MUSIC_EXTS = new Set(['mp3','wav','ogg','m4a','flac','aac','opus','wma','oga']);
   const VIDEO_EXTS = new Set(['mp4','webm','mov','avi','mkv','m4v','ogv','3gp']);
 
   const loadingEl = document.getElementById('loading');
-  const musicSectionEl = document.getElementById('music-section');
-  const musicGridEl = document.getElementById('music-grid');
-  const videoSectionEl = document.getElementById('video-section');
   const foldersEl = document.getElementById('folders');
   const errorEl = document.getElementById('error');
   const emptyEl = document.getElementById('empty');
 
   function getExt(name){
     const i = name.lastIndexOf('.');
-    if (i < 0) return '';
-    return name.slice(i + 1).toLowerCase();
+    return i < 0 ? '' : name.slice(i + 1).toLowerCase();
   }
 
   function getKind(name){
@@ -365,8 +299,7 @@
     const items = treeData.tree || [];
     const basePath = info.basePath ? info.basePath + '/' : '';
 
-    const musicFiles = [];
-    const videoFolders = {};
+    const folders = {}; // { folderName: [ {name, url, kind} ] }
 
     items.forEach(item => {
       if (item.type !== 'blob') return;
@@ -384,35 +317,21 @@
       if (!kind) return;
 
       const url = relPath.split('/').map(encodeURIComponent).join('/');
-
-      if (kind === 'music'){
-        musicFiles.push({ name: fileName, folder: folderName, url });
-      } else {
-        if (!videoFolders[folderName]) videoFolders[folderName] = [];
-        videoFolders[folderName].push({ name: fileName, url });
-      }
+      if (!folders[folderName]) folders[folderName] = [];
+      folders[folderName].push({ name: fileName, url, kind });
     });
 
-    musicFiles.sort((a, b) => {
-      if (a.folder !== b.folder) return a.folder.localeCompare(b.folder, 'fa', { numeric:true });
-      return a.name.localeCompare(b.name, 'fa', { numeric:true });
-    });
-
-    Object.keys(videoFolders).forEach(k => {
-      videoFolders[k].sort((a, b) =>
+    Object.keys(folders).forEach(k => {
+      folders[k].sort((a, b) =>
         a.name.localeCompare(b.name, 'fa', { numeric:true })
       );
     });
 
-    return { musicFiles, videoFolders };
+    return folders;
   }
 
-  /* ============================================
-     دانلود واقعی با fetch + blob
-     (به raw هدایت نمی‌کند، فایل را ذخیره می‌کند)
-     ============================================ */
+  /* دانلود واقعی با fetch + blob (بدون هدایت به raw) */
   async function downloadFile(url, filename, btn){
-    if (!btn) return;
     const originalHTML = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '⏳ در حال دانلود…';
@@ -420,69 +339,60 @@
     try {
       const res = await fetch(url);
       if (!res.ok) throw new Error('HTTP ' + res.status);
-
       const blob = await res.blob();
       const objectUrl = URL.createObjectURL(blob);
-
       const a = document.createElement('a');
       a.href = objectUrl;
       a.download = filename;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-
       setTimeout(() => URL.revokeObjectURL(objectUrl), 2000);
-
       btn.innerHTML = '✓ دانلود شد';
-      setTimeout(() => {
-        btn.innerHTML = originalHTML;
-        btn.disabled = false;
-      }, 1800);
+      setTimeout(() => { btn.innerHTML = originalHTML; btn.disabled = false; }, 1800);
     } catch (err) {
       console.error('Download failed:', err);
       btn.innerHTML = '✗ خطا در دانلود';
-      setTimeout(() => {
-        btn.innerHTML = originalHTML;
-        btn.disabled = false;
-      }, 2000);
+      setTimeout(() => { btn.innerHTML = originalHTML; btn.disabled = false; }, 2000);
     }
   }
 
-  function renderMusic(files){
-    musicGridEl.innerHTML = '';
-    files.forEach((f, i) => {
-      const card = document.createElement('div');
-      card.className = 'music-card';
-      card.style.animationDelay = (i * 0.06) + 's';
+  function createFileCard(file){
+    const card = document.createElement('div');
+    card.className = 'file-card';
 
-      const title = document.createElement('div');
-      title.className = 'music-title';
-      title.textContent = stripExt(f.name);
+    const title = document.createElement('div');
+    title.className = 'file-title';
+    title.textContent = stripExt(file.name);
+    card.appendChild(title);
 
-      const folderHint = document.createElement('div');
-      folderHint.className = 'music-folder';
-      folderHint.textContent = f.folder;
-
+    // پیش‌نمایش
+    if (file.kind === 'music'){
       const audio = document.createElement('audio');
       audio.controls = true;
       audio.preload = 'none';
-      audio.src = f.url;
-
-      const dl = document.createElement('button');
-      dl.type = 'button';
-      dl.className = 'download-btn';
-      dl.innerHTML = '⬇ دانلود';
-      dl.addEventListener('click', () => downloadFile(f.url, f.name, dl));
-
-      card.appendChild(title);
-      card.appendChild(folderHint);
+      audio.src = file.url;
       card.appendChild(audio);
-      card.appendChild(dl);
-      musicGridEl.appendChild(card);
-    });
+    } else {
+      const video = document.createElement('video');
+      video.controls = true;
+      video.preload = 'none';
+      video.src = file.url;
+      card.appendChild(video);
+    }
+
+    // دکمه دانلود
+    const dl = document.createElement('button');
+    dl.type = 'button';
+    dl.className = 'download-btn';
+    dl.innerHTML = '⬇ دانلود';
+    dl.addEventListener('click', () => downloadFile(file.url, file.name, dl));
+    card.appendChild(dl);
+
+    return card;
   }
 
-  function renderVideos(folders){
+  function renderFolders(folders){
     foldersEl.innerHTML = '';
     const names = Object.keys(folders).sort((a, b) =>
       a.localeCompare(b, 'fa', { numeric:true })
@@ -493,64 +403,32 @@
       folderDiv.className = 'folder';
       folderDiv.style.animationDelay = (i * 0.08) + 's';
 
+      // تایتل کادر = نام پوشه
       const title = document.createElement('div');
       title.className = 'folder-title';
       title.textContent = folderName;
       folderDiv.appendChild(title);
 
-      const list = document.createElement('div');
-      list.className = 'video-list';
+      // بدنه کادر = فایل‌ها
+      const body = document.createElement('div');
+      body.className = 'folder-body';
 
-      folders[folderName].forEach(v => {
-        const card = document.createElement('div');
-        card.className = 'video-card';
-
-        const vTitle = document.createElement('div');
-        vTitle.className = 'video-title';
-        vTitle.textContent = stripExt(v.name);
-
-        const video = document.createElement('video');
-        video.controls = true;
-        video.preload = 'none';
-        video.src = v.url;
-
-        const dl = document.createElement('button');
-        dl.type = 'button';
-        dl.className = 'download-btn';
-        dl.innerHTML = '⬇ دانلود';
-        dl.addEventListener('click', () => downloadFile(v.url, v.name, dl));
-
-        card.appendChild(vTitle);
-        card.appendChild(video);
-        card.appendChild(dl);
-        list.appendChild(card);
+      folders[folderName].forEach(file => {
+        body.appendChild(createFileCard(file));
       });
 
-      folderDiv.appendChild(list);
+      folderDiv.appendChild(body);
       foldersEl.appendChild(folderDiv);
     });
   }
 
-  function finalize(data){
+  function finalize(folders){
     loadingEl.style.display = 'none';
-
-    const hasMusic = data.musicFiles.length > 0;
-    const hasVideos = Object.keys(data.videoFolders).length > 0;
-
-    if (!hasMusic && !hasVideos){
+    if (Object.keys(folders).length === 0){
       emptyEl.style.display = 'block';
       return;
     }
-
-    if (hasMusic){
-      musicSectionEl.style.display = 'block';
-      renderMusic(data.musicFiles);
-    }
-
-    if (hasVideos){
-      videoSectionEl.style.display = 'block';
-      renderVideos(data.videoFolders);
-    }
+    renderFolders(folders);
   }
 
   function fail(msg){
